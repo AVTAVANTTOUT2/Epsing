@@ -1,26 +1,133 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-size: 16px;
+  --background: #F9F9F9;
+  --foreground: #1F1F1F;
+  --card: #FFFFFF;
+  --card-foreground: #1F1F1F;
+  --popover: #FFFFFF;
+  --popover-foreground: #1F1F1F;
+  --primary: #6B3FA0;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E5E5E5;
+  --secondary-foreground: #1F1F1F;
+  --muted: #E5E5E5;
+  --muted-foreground: #808080;
+  --accent: #E5E5E5;
+  --accent-foreground: #1F1F1F;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #E5E5E5;
+  --input: rgba(0, 0, 0, 0.12);
+  --input-background: #FFFFFF;
+  --switch-background: #E5E5E5;
+  --ring: #6B3FA0;
+  --gold: #F59E0B;
+  --silver: #9CA3AF;
+  --bronze: #B45309;
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --radius: 0.75rem;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1F1F1F;
+  --sidebar-primary: #6B3FA0;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #E5E5E5;
+  --sidebar-accent-foreground: #1F1F1F;
+  --sidebar-border: #E5E5E5;
+  --sidebar-ring: #6B3FA0;
+}
+
+.dark {
+  --background: #191919;
+  --foreground: #F2F2F2;
+  --card: #262626;
+  --card-foreground: #F2F2F2;
+  --popover: #262626;
+  --popover-foreground: #F2F2F2;
+  --primary: #8B5CF6;
+  --primary-foreground: #191919;
+  --secondary: #333333;
+  --secondary-foreground: #F2F2F2;
+  --muted: #333333;
+  --muted-foreground: #999999;
+  --accent: #333333;
+  --accent-foreground: #F2F2F2;
+  --destructive: #EF4444;
+  --destructive-foreground: #F2F2F2;
+  --border: rgba(255, 255, 255, 0.10);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: #8B5CF6;
+  --gold: #F59E0B;
+  --silver: #9CA3AF;
+  --bronze: #B45309;
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --sidebar: #191919;
+  --sidebar-foreground: #F2F2F2;
+  --sidebar-primary: #8B5CF6;
+  --sidebar-primary-foreground: #191919;
+  --sidebar-accent: #333333;
+  --sidebar-accent-foreground: #F2F2F2;
+  --sidebar-border: rgba(255, 255, 255, 0.10);
+  --sidebar-ring: #8B5CF6;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-gold: var(--gold);
+  --color-silver: var(--silver);
+  --color-bronze: var(--bronze);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-base: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  html {
+    font-size: var(--font-size);
+  }
 }

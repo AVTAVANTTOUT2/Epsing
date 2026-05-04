@@ -39,3 +39,18 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Epsing — database (keep data/ out of git)
+/data/
+*.db
+*.db-shm
+*.db-wal
+
+# Epsing — PWA generated service worker
+/public/sw.js
+/public/sw.js.map
+/public/workbox-*.js
+/public/workbox-*.js.map
+
+# Keep .env.example, ignore actual secrets
+!.env.example
