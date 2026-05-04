@@ -216,3 +216,5 @@ Pour des icônes personnalisées, remplacez les fichiers dans `public/icons/` :
 - `npm run dev` lance avec succes sur `http://localhost:3000` (env charge: `.env.local`).
 - `npm run test` execute 9 tests Vitest, tous verts.
 - `npm run build` termine sans warning ni erreur.
+- Commit global cree: `feat: initialise Epsing avec PWA, auth et moteur de classement`.
+- Nouveau depot GitHub cree: `Epsing` (remote `origin`) et branche `main` poussee.
