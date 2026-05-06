@@ -11,7 +11,6 @@ interface UserProfile {
   isActive: boolean;
   bio?: string | null;
   playStyle?: string | null;
-  eloRating: number;
 }
 
 export default function ProfilPage() {

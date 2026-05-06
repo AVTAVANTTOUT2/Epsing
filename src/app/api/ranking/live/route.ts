@@ -20,6 +20,8 @@ interface DbScore {
   points: number;
   rank: number;
   vote_count: number;
+  mvp_count: number;
+  is_mvp: number;
 }
 
 interface DbVoteRow {
@@ -72,7 +74,7 @@ export async function GET(): Promise<NextResponse<ApiResult<LiveRankingData>>> {
   if (!isLive) {
     const scores = db
       .prepare(
-        `SELECT ws.user_id, u.username, ws.points, ws.rank, ws.vote_count
+        `SELECT ws.user_id, u.username, ws.points, ws.rank, ws.vote_count, ws.mvp_count, ws.is_mvp
          FROM weekly_scores ws
          JOIN users u ON u.id = ws.user_id
          WHERE ws.week_id = ?
@@ -86,6 +88,8 @@ export async function GET(): Promise<NextResponse<ApiResult<LiveRankingData>>> {
       points: s.points,
       rank: s.rank,
       voteCount: s.vote_count,
+      mvpCount: s.mvp_count,
+      isMvp: Boolean(s.is_mvp),
     }));
 
     const maxVoteCount = Math.max(...scores.map((s) => s.vote_count), 0);
@@ -148,6 +152,8 @@ export async function GET(): Promise<NextResponse<ApiResult<LiveRankingData>>> {
     points: r.points,
     rank: r.rank,
     voteCount: r.voteCount,
+    mvpCount: r.mvpCount,
+    isMvp: r.isMvp,
   }));
 
   const totalVotes = ballots.length;

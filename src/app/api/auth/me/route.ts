@@ -44,7 +44,6 @@ export async function GET(): Promise<NextResponse<ApiResult<{ user: User }>>> {
         isActive: Boolean(user.is_active),
         bio: user.bio,
         playStyle: user.play_style,
-        eloRating: user.elo_rating,
       },
     },
   });

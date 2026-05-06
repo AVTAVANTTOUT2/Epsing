@@ -9,6 +9,7 @@ interface DbAgg {
   username: string;
   total_points: number;
   week_count: number;
+  total_mvp_stars: number;
 }
 
 interface MonthRankingData {
@@ -70,7 +71,8 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiResult<
     .prepare(
       `SELECT ws.user_id, u.username,
               SUM(ws.points) as total_points,
-              COUNT(*) as week_count
+              COUNT(*) as week_count,
+              SUM(ws.is_mvp) as total_mvp_stars
        FROM weekly_scores ws
        JOIN users u ON u.id = ws.user_id
        WHERE ws.week_id IN (${placeholders})
@@ -85,6 +87,8 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiResult<
     points: r.total_points,
     rank: index + 1,
     voteCount: r.week_count,
+    mvpCount: r.total_mvp_stars,
+    isMvp: r.total_mvp_stars > 0,
   }));
 
   return NextResponse.json({
