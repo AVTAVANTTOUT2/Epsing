@@ -28,9 +28,16 @@ export function PodiumCard({ player, rank }: PodiumCardProps) {
       <div className="text-2xl">{medal}</div>
       <PlayerAvatar username={player.username} size="lg" />
       <div className="flex flex-col items-center gap-0.5 min-w-0 w-full">
-        <p className="font-semibold truncate max-w-[80px] text-center text-sm">
-          {player.username}
-        </p>
+        <div className="flex items-center justify-center gap-1 w-full px-1">
+          <p className="font-semibold truncate text-center text-sm">
+            {player.username}
+          </p>
+          {player.isMvp && (
+            <span title={`MVP (${player.mvpCount} votes)`} className="text-[#F59E0B] text-[10px] flex-shrink-0">
+              ⭐
+            </span>
+          )}
+        </div>
         <p className="text-xs text-muted-foreground font-mono">{formattedPoints} pts</p>
       </div>
     </Link>

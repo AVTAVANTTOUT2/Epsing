@@ -7,6 +7,7 @@ import type { ApiResult } from '@/types';
 
 const schema = z.object({
   weekId: z.number().int().positive(),
+  mvpUserId: z.number().int().positive().nullable().optional(),
   rankings: z.array(
     z.object({
       userId: z.number().int().positive(),
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiResult
     );
   }
 
-  const { weekId, rankings } = parsed.data;
+  const { weekId, rankings, mvpUserId } = parsed.data;
   const db = getDb();
 
   const week = db
@@ -77,7 +78,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiResult
 
   // Validate ballot
   try {
-    validateBallot({ voterId: session.sub, rankings }, activeUserIds);
+    validateBallot({ voterId: session.sub, rankings, mvpUserId }, activeUserIds);
   } catch (e) {
     if (e instanceof InvalidBallotError) {
       return NextResponse.json(
@@ -102,8 +103,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiResult
 
     // Insert new vote
     const voteResult = db
-      .prepare('INSERT INTO votes (user_id, week_id) VALUES (?, ?)')
-      .run(session.sub, weekId);
+      .prepare('INSERT INTO votes (user_id, week_id, mvp_user_id) VALUES (?, ?, ?)')
+      .run(session.sub, weekId, mvpUserId ?? null);
     const voteId = voteResult.lastInsertRowid as number;
 
     // Insert rankings

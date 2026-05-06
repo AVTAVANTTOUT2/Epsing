@@ -62,6 +62,37 @@ const migrations: Array<{ id: number; name: string; sql: string }> = [
       CREATE INDEX IF NOT EXISTS idx_weekly_scores_user ON weekly_scores(user_id);
     `,
   },
+  {
+    id: 2,
+    name: '002_mvp_system',
+    sql: `
+      ALTER TABLE votes ADD COLUMN mvp_user_id INTEGER REFERENCES users(id);
+      ALTER TABLE weekly_scores ADD COLUMN mvp_count INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE weekly_scores ADD COLUMN is_mvp INTEGER NOT NULL DEFAULT 0;
+    `,
+  },
+  {
+    id: 3,
+    name: '003_matches_and_profiles',
+    sql: `
+      ALTER TABLE users ADD COLUMN bio TEXT;
+      ALTER TABLE users ADD COLUMN play_style TEXT;
+      ALTER TABLE users ADD COLUMN elo_rating INTEGER NOT NULL DEFAULT 1200;
+
+      CREATE TABLE IF NOT EXISTS matches (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        player1_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        player2_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        score1 INTEGER NOT NULL,
+        score2 INTEGER NOT NULL,
+        elo_change1 INTEGER NOT NULL,
+        elo_change2 INTEGER NOT NULL,
+        played_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+      CREATE INDEX IF NOT EXISTS idx_matches_p1 ON matches(player1_id);
+      CREATE INDEX IF NOT EXISTS idx_matches_p2 ON matches(player2_id);
+    `,
+  },
 ];
 
 export function runMigrations(): void {

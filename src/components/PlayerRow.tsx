@@ -8,6 +8,8 @@ interface PlayerRowProps {
     points: number;
     rank: number;
     delta?: number;
+    isMvp?: boolean;
+    mvpCount?: number;
   };
   onClick?: () => void;
 }
@@ -24,7 +26,14 @@ export function PlayerRow({ player, onClick }: PlayerRowProps) {
 
       <PlayerAvatar username={player.username} size="sm" />
 
-      <div className="flex-1 text-left truncate font-medium">{player.username}</div>
+      <div className="flex-1 text-left truncate font-medium flex items-center gap-1">
+        <span>{player.username}</span>
+        {player.isMvp && (
+          <span title={`MVP (${player.mvpCount} votes)`} className="text-[#F59E0B] text-xs inline-flex items-center">
+            ⭐{player.mvpCount && player.mvpCount > 1 ? <span className="ml-0.5 text-[9px] font-bold">x{player.mvpCount}</span> : ''}
+          </span>
+        )}
+      </div>
 
       {player.delta !== undefined && player.delta !== 0 && (
         <div

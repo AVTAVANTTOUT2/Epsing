@@ -17,7 +17,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical } from 'lucide-react';
+import { GripVertical, Star } from 'lucide-react';
 import { PlayerAvatar } from './PlayerAvatar';
 
 interface Player {
@@ -29,6 +29,8 @@ interface RankingDndProps {
   players: Player[];
   initialOrder?: number[];
   onChange: (orderedIds: number[]) => void;
+  mvpUserId: number | null;
+  onMvpChange: (userId: number) => void;
 }
 
 const badgeColors: Record<number, string> = {
@@ -37,7 +39,7 @@ const badgeColors: Record<number, string> = {
   3: 'bg-[#B45309] text-white',
 };
 
-function SortableItem({ player, position }: { player: Player; position: number }) {
+function SortableItem({ player, position, isMvp, onMvpClick }: { player: Player; position: number; isMvp: boolean; onMvpClick: () => void }) {
   const {
     attributes,
     listeners,
@@ -73,6 +75,16 @@ function SortableItem({ player, position }: { player: Player; position: number }
       <div className="flex-1 font-medium truncate">{player.username}</div>
 
       <button
+        type="button"
+        onClick={onMvpClick}
+        className={`p-1.5 transition-colors ${isMvp ? 'text-[#F59E0B]' : 'text-muted-foreground hover:text-[#F59E0B]/70'}`}
+        aria-label="Définir comme MVP"
+        title="Désigner comme MVP de la semaine"
+      >
+        <Star className="w-5 h-5" fill={isMvp ? 'currentColor' : 'none'} strokeWidth={isMvp ? 1 : 2} />
+      </button>
+
+      <button
         {...listeners}
         {...attributes}
         className="touch-none cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors p-1"
@@ -84,7 +96,7 @@ function SortableItem({ player, position }: { player: Player; position: number }
   );
 }
 
-export function RankingDnd({ players, initialOrder, onChange }: RankingDndProps) {
+export function RankingDnd({ players, initialOrder, onChange, mvpUserId, onMvpChange }: RankingDndProps) {
   const [items, setItems] = useState<Player[]>(() => {
     if (initialOrder && initialOrder.length === players.length) {
       return initialOrder
@@ -128,7 +140,13 @@ export function RankingDnd({ players, initialOrder, onChange }: RankingDndProps)
       >
         <div className="space-y-2">
           {items.map((player, index) => (
-            <SortableItem key={player.id} player={player} position={index + 1} />
+            <SortableItem
+              key={player.id}
+              player={player}
+              position={index + 1}
+              isMvp={player.id === mvpUserId}
+              onMvpClick={() => onMvpChange(player.id)}
+            />
           ))}
         </div>
       </SortableContext>
