@@ -18,7 +18,6 @@ export interface User {
   isActive: boolean;
   bio?: string | null;
   playStyle?: string | null;
-  eloRating: number;
 }
 
 export interface Week {
