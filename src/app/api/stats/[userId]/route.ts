@@ -10,6 +10,8 @@ interface DbScoreRow {
   points: number;
   rank: number;
   vote_count: number;
+  mvp_count: number;
+  is_mvp: number;
 }
 
 interface UserStats {
@@ -18,6 +20,7 @@ interface UserStats {
   bestRank: number | null;
   avgRank: number | null;
   weekCount: number;
+  totalMvpStars: number;
   history: Array<{
     year: number;
     isoWeek: number;
@@ -25,6 +28,8 @@ interface UserStats {
     points: number;
     rank: number;
     voteCount: number;
+    mvpCount: number;
+    isMvp: boolean;
   }>;
 }
 
@@ -72,7 +77,7 @@ export async function GET(
 
   const rows = db
     .prepare(
-      `SELECT w.year, w.iso_week, ws.points, ws.rank, ws.vote_count
+      `SELECT w.year, w.iso_week, ws.points, ws.rank, ws.vote_count, ws.mvp_count, ws.is_mvp
        FROM weekly_scores ws
        JOIN weeks w ON w.id = ws.week_id
        WHERE ws.user_id = ? AND w.status = 'tallied'
@@ -91,6 +96,8 @@ export async function GET(
     points: r.points,
     rank: r.rank,
     voteCount: r.vote_count,
+    mvpCount: r.mvp_count,
+    isMvp: Boolean(r.is_mvp),
   }));
 
   const weekCount = history.length;
@@ -99,6 +106,7 @@ export async function GET(
     weekCount > 0
       ? Math.round((rows.reduce((acc, r) => acc + r.rank, 0) / weekCount) * 10) / 10
       : null;
+  const totalMvpStars = rows.reduce((acc, r) => acc + r.is_mvp, 0);
 
   return NextResponse.json({
     ok: true,
@@ -108,6 +116,7 @@ export async function GET(
       bestRank,
       avgRank,
       weekCount,
+      totalMvpStars,
       history,
     },
   });

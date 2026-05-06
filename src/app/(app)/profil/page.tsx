@@ -9,6 +9,9 @@ interface UserProfile {
   username: string;
   createdAt: string;
   isActive: boolean;
+  bio?: string | null;
+  playStyle?: string | null;
+  eloRating: number;
 }
 
 export default function ProfilPage() {
@@ -22,16 +25,49 @@ export default function ProfilPage() {
   const [success, setSuccess] = useState(false);
   const [pwdLoading, setPwdLoading] = useState(false);
 
+  // Profile fields
+  const [bio, setBio] = useState('');
+  const [playStyle, setPlayStyle] = useState('');
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileSuccess, setProfileSuccess] = useState(false);
+
   useEffect(() => {
     fetch('/api/auth/me')
       .then((r) => r.json())
-      .then((d) => { if (d.ok) setUser(d.data.user); });
+      .then((d) => {
+        if (d.ok) {
+          setUser(d.data.user);
+          setBio(d.data.user.bio || '');
+          setPlayStyle(d.data.user.playStyle || '');
+        }
+      });
   }, []);
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' });
     router.push('/login');
     router.refresh();
+  }
+
+  async function handleProfileUpdate(e: React.FormEvent) {
+    e.preventDefault();
+    setProfileSaving(true);
+    setProfileSuccess(false);
+
+    try {
+      const res = await fetch('/api/users/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bio, playStyle }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setProfileSuccess(true);
+        setTimeout(() => setProfileSuccess(false), 3000);
+      }
+    } finally {
+      setProfileSaving(false);
+    }
   }
 
   async function handlePasswordChange(e: React.FormEvent) {
@@ -100,6 +136,49 @@ export default function ProfilPage() {
             <p className="text-sm text-muted-foreground">Membre depuis {joinDate}</p>
           </div>
         </div>
+
+        <form onSubmit={handleProfileUpdate} className="bg-card rounded-xl border border-border p-4 space-y-4">
+          <h3 className="font-semibold mb-2">Personnalisation</h3>
+          
+          <div className="space-y-2">
+            <label htmlFor="playStyle" className="text-sm font-medium">Style de jeu</label>
+            <input
+              id="playStyle"
+              type="text"
+              value={playStyle}
+              onChange={(e) => setPlayStyle(e.target.value)}
+              placeholder="Ex: Défensif, Attaquant..."
+              className="w-full px-3 py-2 bg-input border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+              maxLength={50}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="bio" className="text-sm font-medium">Bio / Citation</label>
+            <textarea
+              id="bio"
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              placeholder="Une petite phrase d'accroche..."
+              className="w-full px-3 py-2 bg-input border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary min-h-[80px] resize-y text-sm"
+              maxLength={200}
+            />
+          </div>
+
+          {profileSuccess && (
+            <div className="p-2 bg-success/10 text-success rounded-md text-xs font-medium">
+              Profil mis à jour !
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={profileSaving}
+            className="w-full py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 text-sm"
+          >
+            {profileSaving ? 'Sauvegarde...' : 'Sauvegarder le profil'}
+          </button>
+        </form>
 
         <div className="space-y-3">
           <button

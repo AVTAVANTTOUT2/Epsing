@@ -16,6 +16,9 @@ export interface User {
   username: string;
   createdAt: string;
   isActive: boolean;
+  bio?: string | null;
+  playStyle?: string | null;
+  eloRating: number;
 }
 
 export interface Week {
@@ -49,6 +52,8 @@ export interface WeeklyScore {
   points: number;
   rank: number;
   voteCount: number;
+  mvpCount: number;
+  isMvp: boolean;
 }
 
 export interface RankedPlayer {
@@ -58,6 +63,8 @@ export interface RankedPlayer {
   rank: number;
   voteCount: number;
   prevRank?: number | null;
+  mvpCount: number;
+  isMvp: boolean;
 }
 
 export interface StatsEntry {
@@ -66,4 +73,6 @@ export interface StatsEntry {
   points: number;
   rank: number;
   voteCount: number;
+  mvpCount: number;
+  isMvp: boolean;
 }

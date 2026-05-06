@@ -22,6 +22,7 @@ interface CurrentVoteData {
   week: Week;
   hasVoted: boolean;
   ballot: Array<{ userId: number; position: number }> | null;
+  mvpUserId: number | null;
 }
 
 export async function GET(): Promise<NextResponse<ApiResult<CurrentVoteData>>> {
@@ -63,13 +64,13 @@ export async function GET(): Promise<NextResponse<ApiResult<CurrentVoteData>>> {
 
   // Check if user already voted this week
   const vote = db
-    .prepare('SELECT id FROM votes WHERE user_id = ? AND week_id = ?')
-    .get(session.sub, week.id) as { id: number } | undefined;
+    .prepare('SELECT id, mvp_user_id FROM votes WHERE user_id = ? AND week_id = ?')
+    .get(session.sub, week.id) as { id: number, mvp_user_id: number | null } | undefined;
 
   if (!vote) {
     return NextResponse.json({
       ok: true,
-      data: { week: weekData, hasVoted: false, ballot: null },
+      data: { week: weekData, hasVoted: false, ballot: null, mvpUserId: null },
     });
   }
 
@@ -86,6 +87,7 @@ export async function GET(): Promise<NextResponse<ApiResult<CurrentVoteData>>> {
       week: weekData,
       hasVoted: true,
       ballot: rankings.map((r) => ({ userId: r.ranked_user_id, position: r.position })),
+      mvpUserId: vote.mvp_user_id,
     },
   });
 }

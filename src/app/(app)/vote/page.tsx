@@ -8,6 +8,7 @@ interface VoteStatus {
   week: Week;
   hasVoted: boolean;
   ballot: Array<{ userId: number; position: number }> | null;
+  mvpUserId: number | null;
 }
 
 function useCountdown(target: string): string {
@@ -57,6 +58,7 @@ export default function VotePage() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [mvpUserId, setMvpUserId] = useState<number | null>(null);
   const onChangeRef = useRef<(ids: number[]) => void>(() => {});
 
   const handleOrderChange = useCallback((ids: number[]) => {
@@ -68,17 +70,25 @@ export default function VotePage() {
   useEffect(() => {
     async function load() {
       try {
-        const [statusRes, usersRes] = await Promise.all([
+        const [statusRes, usersRes, meRes] = await Promise.all([
           fetch('/api/vote/current'),
           fetch('/api/users'),
+          fetch('/api/auth/me'),
         ]);
-        const [statusData, usersData] = await Promise.all([
+        const [statusData, usersData, meData] = await Promise.all([
           statusRes.json(),
           usersRes.json(),
+          meRes.json(),
         ]);
-        if (statusData.ok) setStatus(statusData.data);
-        if (usersData.ok) {
-          const allUsers: User[] = usersData.data.users;
+        if (statusData.ok) {
+          setStatus(statusData.data);
+          if (statusData.data.mvpUserId) {
+            setMvpUserId(statusData.data.mvpUserId);
+          }
+        }
+        if (usersData.ok && meData.ok) {
+          const currentUserId = meData.data.user.id;
+          const allUsers: User[] = usersData.data.users.filter((u: User) => u.id !== currentUserId);
           setUsers(allUsers);
           if (statusData.ok && statusData.data.ballot) {
             const ballot: Array<{ userId: number; position: number }> = statusData.data.ballot;
@@ -106,7 +116,7 @@ export default function VotePage() {
       const res = await fetch('/api/vote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ weekId: status.week.id, rankings }),
+        body: JSON.stringify({ weekId: status.week.id, rankings, mvpUserId }),
       });
       const data = await res.json();
       if (!data.ok) {
@@ -194,6 +204,8 @@ export default function VotePage() {
               players={users.map((u) => ({ id: u.id, username: u.username }))}
               initialOrder={orderedIds}
               onChange={handleOrderChange}
+              mvpUserId={mvpUserId}
+              onMvpChange={setMvpUserId}
             />
 
             {error && (

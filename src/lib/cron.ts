@@ -20,6 +20,7 @@ interface DbVoteRow {
   voter_id: number;
   ranked_user_id: number;
   position: number;
+  mvp_user_id: number | null;
 }
 
 function ensureCurrentWeek(): void {
@@ -59,7 +60,7 @@ function tallyWeek(weekId: number): void {
   // Get all valid votes for this week
   const voteRows = db
     .prepare(
-      `SELECT v.id as vote_id, v.user_id as voter_id, vr.ranked_user_id, vr.position
+      `SELECT v.id as vote_id, v.user_id as voter_id, v.mvp_user_id, vr.ranked_user_id, vr.position
        FROM votes v
        JOIN vote_rankings vr ON vr.vote_id = v.id
        WHERE v.week_id = ?
@@ -71,7 +72,7 @@ function tallyWeek(weekId: number): void {
   const ballotMap = new Map<number, Ballot>();
   for (const row of voteRows) {
     if (!ballotMap.has(row.vote_id)) {
-      ballotMap.set(row.vote_id, { voterId: row.voter_id, rankings: [] });
+      ballotMap.set(row.vote_id, { voterId: row.voter_id, mvpUserId: row.mvp_user_id, rankings: [] });
     }
     ballotMap.get(row.vote_id)!.rankings.push({
       userId: row.ranked_user_id,
@@ -83,8 +84,8 @@ function tallyWeek(weekId: number): void {
   const results = computeWeeklyScores(ballots, activeUserIds);
 
   const insertScore = db.prepare(
-    `INSERT OR REPLACE INTO weekly_scores (week_id, user_id, points, rank, vote_count)
-     VALUES (?, ?, ?, ?, ?)`
+    `INSERT OR REPLACE INTO weekly_scores (week_id, user_id, points, rank, vote_count, mvp_count, is_mvp)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`
   );
 
   const updateWeekStatus = db.prepare(
@@ -93,7 +94,7 @@ function tallyWeek(weekId: number): void {
 
   const doTally = db.transaction(() => {
     for (const result of results) {
-      insertScore.run(weekId, result.userId, result.points, result.rank, result.voteCount);
+      insertScore.run(weekId, result.userId, result.points, result.rank, result.voteCount, result.mvpCount, result.isMvp ? 1 : 0);
     }
     updateWeekStatus.run(weekId);
   });

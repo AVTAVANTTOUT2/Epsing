@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Vote, Trophy, LineChart, User } from 'lucide-react';
+import { Vote, Trophy, LineChart, User, Swords, Users } from 'lucide-react';
 
 const tabs = [
   { href: '/vote', icon: Vote, label: 'Vote' },
-  { href: '/classement', icon: Trophy, label: 'Classement' },
+  { href: '/matchs', icon: Swords, label: 'Matchs' },
+  { href: '/classement', icon: Trophy, label: 'Class.' },
+  { href: '/comparateur', icon: Users, label: 'Vs' },
   { href: '/stats', icon: LineChart, label: 'Stats' },
   { href: '/profil', icon: User, label: 'Profil' },
 ];

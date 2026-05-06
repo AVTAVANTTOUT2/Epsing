@@ -20,7 +20,10 @@ interface UserStats {
     points: number;
     rank: number;
     voteCount: number;
+    mvpCount: number;
+    isMvp: boolean;
   }>;
+  totalMvpStars: number;
 }
 
 function StatsContent() {
@@ -88,7 +91,7 @@ function StatsContent() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="bg-card rounded-xl border border-border p-4 text-center">
           <div className="text-3xl font-black text-primary tabular-nums">
             {stats.bestRank ?? '—'}
@@ -106,6 +109,12 @@ function StatsContent() {
             {stats.weekCount}
           </div>
           <div className="text-xs text-muted-foreground mt-1">Sem. jouées</div>
+        </div>
+        <div className="bg-card rounded-xl border border-border p-4 text-center">
+          <div className="text-3xl font-black text-[#F59E0B] tabular-nums flex items-center justify-center gap-1">
+            {stats.totalMvpStars} <span className="text-xl">⭐</span>
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">Titres MVP</div>
         </div>
       </div>
 
@@ -161,6 +170,7 @@ function StatsContent() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-mono">{(h.points / 100).toFixed(2)} pts</span>
+                    {h.isMvp && <span title="MVP de la semaine" className="text-[#F59E0B] text-xs">⭐</span>}
                     <span className="text-sm font-bold text-primary w-8 text-right">
                       #{h.rank}
                     </span>

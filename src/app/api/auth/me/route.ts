@@ -8,6 +8,9 @@ interface DbUser {
   username: string;
   created_at: string;
   is_active: number;
+  bio: string | null;
+  play_style: string | null;
+  elo_rating: number;
 }
 
 export async function GET(): Promise<NextResponse<ApiResult<{ user: User }>>> {
@@ -21,7 +24,7 @@ export async function GET(): Promise<NextResponse<ApiResult<{ user: User }>>> {
 
   const db = getDb();
   const user = db
-    .prepare('SELECT id, username, created_at, is_active FROM users WHERE id = ?')
+    .prepare('SELECT id, username, created_at, is_active, bio, play_style, elo_rating FROM users WHERE id = ?')
     .get(session.sub) as DbUser | undefined;
 
   if (!user) {
@@ -39,6 +42,9 @@ export async function GET(): Promise<NextResponse<ApiResult<{ user: User }>>> {
         username: user.username,
         createdAt: user.created_at,
         isActive: Boolean(user.is_active),
+        bio: user.bio,
+        playStyle: user.play_style,
+        eloRating: user.elo_rating,
       },
     },
   });
